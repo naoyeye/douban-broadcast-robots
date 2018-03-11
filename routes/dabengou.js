@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   naoyeye
-* @Last Modified time: 2018-03-11 22:55:00
+* @Last Modified time: 2018-03-12 00:42:17
 */
 
 
@@ -40,8 +40,12 @@ router.get('/', function(req, res, next) {
 
         // var rulePostStatus = new schedule.RecurrenceRule();
         // rulePostStatus.minute = '*/20 * * * *'; // 整点发广播
+        
+        // var rule = new schedule.RecurrenceRule();
+        // rule.minute = new schedule.Range(0, 59, 5);
 
-        var autoGetBitcoinPrice = schedule.scheduleJob('*/49 * * * *', function() {
+
+        var autoGetBitcoinPrice = schedule.scheduleJob("*/30 * * * *", function() {
           request.get({
             url: 'https://api.itbit.com/v1/markets/XBTUSD/ticker',
             method: 'GET'
@@ -49,26 +53,29 @@ router.get('/', function(req, res, next) {
             var _data = JSON.parse(data.body);
             latestPrice = parseFloat(_data.lastPrice) + ''
             console.log('latestPrice = ', latestPrice)
+
+            // var autoPostStatusTask = schedule.scheduleJob('*/50 * * * *', function () {
+              var d = new Date();
+              var localTime = d.getTime();
+              var localOffset = d.getTimezoneOffset() * 60000;
+              var utc = localTime + localOffset;
+              var offset = 8;
+              var beijing = utc + (3600000 * offset);
+              date = new Date(beijing);
+              // now = date.getHours();
+              
+              if (latestPrice) {
+                var text = '1₿ = $' + latestPrice;
+                console.log('text = ', text);
+                postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {
+
+                });
+              }
+
+            // });
           });
         })
 
-        var autoPostStatusTask = schedule.scheduleJob('*/50 * * * *', function () {
-          var d = new Date();
-          var localTime = d.getTime();
-          var localOffset = d.getTimezoneOffset() * 60000;
-          var utc = localTime + localOffset;
-          var offset = 8;
-          var beijing = utc + (3600000 * offset);
-          date = new Date(beijing);
-          // now = date.getHours();
-          
-          if (latestPrice) {
-            var text = '1₿ = $' + latestPrice;
-            console.log('text = ', text)
-            postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
-          }
-
-        });
 
         isLaunched = true;
 
@@ -163,14 +170,14 @@ router.get('/auth/douban/callback', function (req, res, next) {
     });
 });
 
-function getBitcoinPrice() {
-  // body...
-}
 
+router.use('/reAuth', function (req, res, next) {
+    accessToken = null;
+    refresh_token = null;
+    currentUserId = null;
 
-function generateText() {
-  // body...
-}
+    res.redirect('/');
+});
 
 
 function postToDouban (accessToken, refresh_token, text, date, callback) {
@@ -183,7 +190,9 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
         if (err && err.code === 106) {
             console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
 
-            refreshToken(refresh_token);
+            refreshToken(refresh_token, text, date, callback);
+
+
             console.log('===========');
         } else if (err || typeof body.code !== 'undefined') {
             console.error(date + '\r\nFuck! Clock fail!, Error:', err, '\r\n Body:', body);
@@ -207,6 +216,27 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
     if (enableImage) {
         form.append('image', request.get(imageUrl));
     }
+}
+
+
+function refreshToken (refresh_token, text, date, callback) {
+    var client_id = config.douban.apiKey;
+    var client_secret = config.douban.Secret;
+    var redirect_uri = config.douban.redirect_uri;
+
+    request.post({
+        url: 'https://www.douban.com/service/auth2/token?client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=' + redirect_uri + '&grant_type=refresh_token&refresh_token=' + refresh_token,
+    }, function (error, response, resBody) {
+        if (!error && response.statusCode === 200) {
+            accessToken = resBody.access_token;
+            refresh_token = resBody.refresh_token;
+            postToDouban(accessToken, refresh_token, text, date, function () {
+              console.log('刷新 token 并广播成功');
+            });
+        } else {
+            console.error(date + 'refresh_token fail!', error, resBody);
+        }
+    });
 }
 
 module.exports = router;
