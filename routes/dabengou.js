@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   naoyeye
-* @Last Modified time: 2018-03-11 22:16:03
+* @Last Modified time: 2018-03-11 22:55:00
 */
 
 
@@ -41,7 +41,7 @@ router.get('/', function(req, res, next) {
         // var rulePostStatus = new schedule.RecurrenceRule();
         // rulePostStatus.minute = '*/20 * * * *'; // 整点发广播
 
-        var autoGetBitcoinPrice = schedule.scheduleJob('*/19 * * * *', function() {
+        var autoGetBitcoinPrice = schedule.scheduleJob('*/49 * * * *', function() {
           request.get({
             url: 'https://api.itbit.com/v1/markets/XBTUSD/ticker',
             method: 'GET'
@@ -52,7 +52,7 @@ router.get('/', function(req, res, next) {
           });
         })
 
-        var autoPostStatusTask = schedule.scheduleJob('*/20 * * * *', function () {
+        var autoPostStatusTask = schedule.scheduleJob('*/50 * * * *', function () {
           var d = new Date();
           var localTime = d.getTime();
           var localOffset = d.getTimezoneOffset() * 60000;
