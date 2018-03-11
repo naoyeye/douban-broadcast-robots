@@ -11,6 +11,7 @@ var AV = require('leanengine');
 require('./cloud');
 
 var app = express();
+app.disable('x-powered-by');
 
 // 设置模板引擎
 app.set('views', path.join(__dirname, 'views'));
@@ -26,18 +27,19 @@ app.use(AV.express());
 
 app.enable('trust proxy');
 // 需要重定向到 HTTPS 可去除下一行的注释。
-// app.use(AV.Cloud.HttpsRedirect());
+app.use(AV.Cloud.HttpsRedirect());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.get('/', function(req, res) {
-  res.render('index', { currentTime: new Date() });
-});
+// app.get('/', function(req, res) {
+//   res.render('index', { currentTime: new Date() });
+// });
 
 // 可以将一类的路由单独保存在一个文件中
-app.use('/todos', require('./routes/todos'));
+app.use('/', require('./routes/dabengou'));
+// app.use('/todos', require('./routes/dabengou'));
 
 app.use(function(req, res, next) {
   // 如果任何一个路由都没有返回响应，则抛出一个 404 异常给后续的异常处理器

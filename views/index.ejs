@@ -1,13 +1,36 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="zh-cmn-Hans">
   <head>
-    <title>LeanEngine</title>
+    <meta charset="utf-8">
+    <title>豆瓣大笨狗の官方网站</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-9097302-14', 'auto');ga('send', 'pageview');
+    </script>
   </head>
   <body>
-    <h1>LeanEngine</h1>
-    <p>这是 LeanEngine 的示例应用</p>
-    <p>当前时间：<%= currentTime %></p>
-    <p><a href="/todos">一个简单的「TODO 列表」示例</a></p>
+    <div id="wrap">
+      <img class="avatar" src="http://ww1.sinaimg.cn/large/61b8bbf4ly1fp917wqzdzj20dw0dw3yu.jpg">
+      <h1>豆瓣大笨狗の官方网站</h1>
+
+      <p class="message"><% message %></p>
+
+      <% if (!tryLogged) { %>
+        <p class="message">
+          <a href="/auth/douban" class="button">我就是大笨狗，快让我进去！</a>
+        </p>
+      <% } else { %>
+        <% if (currentUser === true) { %>
+          <p>进来了</p>
+        <% } else { %>
+          <p>不跟你玩儿</p>
+          <p class="mamamiya">
+            <a href="/reAuth" class="button">刚才手滑</a>
+          </p>
+        <% } %>
+      <% } %>
+    </div>
+
+    <footer><p>copyright 2018 by <a href="https://www.douban.com/people/175248276" target="_blank">豆瓣大笨狗</a></p></footer>
   </body>
 </html>

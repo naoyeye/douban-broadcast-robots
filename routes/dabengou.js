@@ -1,0 +1,212 @@
+/*
+* @Author: naoyeye
+* @Date:   2018-03-11 18:03:33
+* @Last Modified by:   naoyeye
+* @Last Modified time: 2018-03-11 22:16:03
+*/
+
+
+'use strict';
+var router = require('express').Router();
+var AV = require('leanengine');
+var config = require('./../config/app-config');
+var url = require('url');
+var request = require('request');
+var curl = require('curlrequest');
+var schedule = require('node-schedule');
+
+var date;
+var now;
+var enableImage = false; // 关闭图片附件
+
+var imageUrl = 'http://dabenji.doubanclock.com/pic/test-small.gif';
+var isLaunched = false;
+
+var accessToken = null;
+var refresh_token;
+var currentUserId;
+var latestPrice = 0;
+var point = 30; // 第几分钟时发布广播
+
+
+router.get('/', function(req, res, next) {
+  if (accessToken) {
+
+    if (config.userId.indexOf(currentUserId) >= 0) {
+      if (!isLaunched) {
+
+        // var ruleGetBitcoinPrice = new schedule.RecurrenceRule();
+        // ruleGetBitcoinPrice.minute = '*/19 * * * *';
+
+        // var rulePostStatus = new schedule.RecurrenceRule();
+        // rulePostStatus.minute = '*/20 * * * *'; // 整点发广播
+
+        var autoGetBitcoinPrice = schedule.scheduleJob('*/19 * * * *', function() {
+          request.get({
+            url: 'https://api.itbit.com/v1/markets/XBTUSD/ticker',
+            method: 'GET'
+          }, function (err, data) {
+            var _data = JSON.parse(data.body);
+            latestPrice = parseFloat(_data.lastPrice) + ''
+            console.log('latestPrice = ', latestPrice)
+          });
+        })
+
+        var autoPostStatusTask = schedule.scheduleJob('*/20 * * * *', function () {
+          var d = new Date();
+          var localTime = d.getTime();
+          var localOffset = d.getTimezoneOffset() * 60000;
+          var utc = localTime + localOffset;
+          var offset = 8;
+          var beijing = utc + (3600000 * offset);
+          date = new Date(beijing);
+          // now = date.getHours();
+          
+          if (latestPrice) {
+            var text = '1₿ = $' + latestPrice;
+            console.log('text = ', text)
+            postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+          }
+
+        });
+
+        isLaunched = true;
+
+        var data = {
+          currentUser: true,
+          tryLogged: true,
+          message: '欢迎大笨狗，嘻嘻嘻嘻嘻！',
+          imageUrl: enableImage ?  imageUrl : ''
+        }
+
+        res.render('index', data);
+
+
+      } else {
+        var data = {
+          currentUser: true,
+          tryLogged: true,
+          message: '欢迎大笨狗，哈哈哈哈哈哈！',
+          imageUrl: enableImage ?  imageUrl : ''
+        }
+        res.render('index', data);
+      }
+
+    } else {
+      var data = {
+        currentUser: false,
+        tryLogged: true,
+        message: '你不是大笨狗',
+        imageUrl: enableImage ?  imageUrl : ''
+      }
+      res.render('index', data);
+    }
+
+  } else {
+    var data = {
+      currentUser: false,
+      tryLogged: false,
+      message: '你是大笨狗吗？不是大笨狗不要点下面的按钮。',
+      imageUrl: enableImage ?  imageUrl : ''
+    }
+    res.render('index', data);
+  }
+});
+
+
+router.get('/auth/douban', function (req, res, next) {
+  res.redirect('https://www.douban.com/service/auth2/auth?client_id='
+    + config.douban.apiKey
+    + '&redirect_uri='
+    + config.douban.redirect_uri 
+    + '&response_type=code&scope=' 
+    + config.douban.scope);
+});
+
+
+router.get('/auth/douban/callback', function (req, res, next) {
+    var parsedUrl = url.parse(req.url, true);
+    
+    if (!parsedUrl.query || !parsedUrl.query.code) {
+        console.error("Missing code in querystring. The url looks like " + req.url);
+        res.redirect('/');
+        return;
+    }
+
+    var code = parsedUrl.query && parsedUrl.query.code;
+
+    var oauth = {
+        grant_type: 'authorization_code',
+        code: code,
+        client_id: config.douban.apiKey,
+        client_secret: config.douban.Secret,
+        redirect_uri: config.douban.redirect_uri
+    };
+
+    // get accessToken
+    curl.request({
+        url: 'https://www.douban.com/service/auth2/token',
+        method: 'POST',
+        data: oauth
+    }, function (err, parts) {
+        parts = parts.split('\r\n');
+        var data = JSON.parse(parts.pop());
+
+        accessToken = data.access_token;
+        refresh_token = data.refresh_token;
+        currentUserId = data.douban_user_id;
+
+        console.log('accessToken!!', data.access_token);
+
+        res.redirect('/');
+
+    });
+});
+
+function getBitcoinPrice() {
+  // body...
+}
+
+
+function generateText() {
+  // body...
+}
+
+
+function postToDouban (accessToken, refresh_token, text, date, callback) {
+    // 带图版
+    var r = request.post('https://api.douban.com/shuo/v2/statuses/', {
+            method: 'POST',
+            headers: {'Authorization': 'Bearer ' + accessToken},
+            // timeout: 70000 // 7秒超时吧
+        }, function (err, httpResponse, body) {
+        if (err && err.code === 106) {
+            console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
+
+            refreshToken(refresh_token);
+            console.log('===========');
+        } else if (err || typeof body.code !== 'undefined') {
+            console.error(date + '\r\nFuck! Clock fail!, Error:', err, '\r\n Body:', body);
+            mailSender('FxxK dabenji!', body, function (mailError, mailResponse) {
+                console.log('Sender feedback:', mailError, mailResponse);
+            });
+            console.log('===========');
+        } else {
+            console.log(date + '\r\nLOL clock success!');
+            console.log('===========');
+            // console.log('body = ', body)
+        }
+
+        if (callback && typeof callback === 'function') {
+            callback(err, httpResponse, body);
+        }
+    });
+
+    var form = r.form();
+    form.append('text', text);
+    if (enableImage) {
+        form.append('image', request.get(imageUrl));
+    }
+}
+
+module.exports = router;
