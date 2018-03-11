@@ -57,3 +57,13 @@ typings/
 # dotenv environment variables file
 .env
 
+
+npm-debug.log
+start.sh
+.avoscloud
+.leancloud
+
+# VIM
+*~
+*.swp
+
