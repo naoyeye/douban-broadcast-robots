@@ -1,0 +1,34 @@
+<%- contentFor('title') %>
+新建豆瓣广播机器人
+
+<link rel="stylesheet" href="/stylesheets/newbot.css">
+
+<%- contentFor('body') %>
+<form action="" method="post">
+  <fieldset>
+    <legend>豆瓣id</legend>
+    <input type="number" name="doubanId" />
+  </fieldset>
+  
+  <fieldset>
+    <legend>豆瓣用户名(域名)，如果未设置，可以填上面的 id</legend>
+    <input type="text" name="alias" />
+  </fieldset>
+
+  <fieldset>
+    <legend>豆瓣昵称</legend>
+    <input type="text" name="username"  />
+  </fieldset>
+
+  <fieldset>
+    <legend>豆瓣头像图片地址</legend>
+    <input type="text" name="image">
+  </fieldset>
+
+  <fieldset>
+    <legend>简介</legend>
+    <textarea name="intro"></textarea>
+  </fieldset>
+
+  <button type="submit">提交</button>
+</form>

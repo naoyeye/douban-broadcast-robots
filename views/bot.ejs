@@ -1,0 +1,31 @@
+<%- contentFor('title') %>
+<%= bot.username %>
+
+<link rel="stylesheet" href="/stylesheets/bot.css">
+
+<%- contentFor('body') %>
+<a href="/" class="back-home">返回首页</a>
+
+<div class="bot-wrap">
+  <div class="card">
+    <div class="avatar"><img src="<%= bot.image %>" /></div>
+    <h3><%= bot.username %></h3>
+    <p><%= bot.intro %></p>
+    <div class="status">当前状态：
+      <% if (bot.status === '0') { %>
+        <span>未运行</span>
+      <% } else if (bot.status === '1') { %>
+        <span>运行中</span>
+      <% } else if (bot.status === '2') { %>
+        <span>已停止</span>
+      <% } %>
+    </div>
+  </div>
+  <div class="control">
+    <ul>
+      <li>开启关闭</li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+</div>

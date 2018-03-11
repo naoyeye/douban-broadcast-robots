@@ -1,0 +1,87 @@
+/*
+* @Author: hanjiyun
+* @Date:   2019-01-26 20:31:35
+* @Last Modified by:   hanjiyun
+* @Last Modified time: 2019-01-26 20:59:25
+*/
+
+@import "_form-reset";
+
+
+
+form {
+  display: block;
+  width: 400px;
+  margin: 40px auto;
+}
+
+fieldset {
+  border: 0;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+}
+
+legend {
+  position: relative;
+  top: -10px;
+  padding: 5px 10px 0 10px;
+  border: 1px solid #ddd;
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: #fff;
+  line-height: 1.2;
+}
+
+input {
+  @extend %form-reset-input;
+
+  width: 100%;
+  margin-top: -10px;
+  box-sizing: border-box;
+  padding: 10px;
+  background: #fff;
+  border-radius: 4px;
+}
+
+
+
+label {
+  @extend %form-reset-label;
+}
+
+select {
+  @extend %form-reset-select;
+}
+
+button {
+  @extend %form-reset-button;
+}
+
+textarea {
+  @extend %form-reset-textarea;
+
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+  background: #fff;
+  border-radius: 4px;
+  outline: none;
+  resize: vertical;
+}
+
+button {
+  display: block;
+  width: 100%;
+  background: #60c97a;
+  color: #fff;
+  font-size: 16px;
+  padding: 15px 40px;
+  line-height: 1;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+

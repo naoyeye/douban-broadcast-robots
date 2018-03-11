@@ -1,0 +1,27 @@
+<%- contentFor('title') %>
+豆瓣广播机器人
+
+<link rel="stylesheet" href="/stylesheets/home.css">
+
+<%- contentFor('body') %>
+<ul class="bot-list">
+  <% bots.forEach(function(bot) { %>
+  <li class="card">
+    <a href="/bot?name=<%= bot.alias %>">
+      <div class="avatar"><img src="<%= bot.image %>" /></div>
+      <h3><%= bot.username %></h3>
+      <p><%= bot.intro %></p>
+      <div class="status">当前状态：
+        <% if (bot.status === '0') { %>
+          <span>未运行</span>
+        <% } else if (bot.status === '1') { %>
+          <span>运行中</span>
+        <% } else if (bot.status === '2') { %>
+          <span>已停止</span>
+        <% } %>
+      </div>
+    </a>
+  </li>
+  <% }); %>
+  <li class="card new"><a href="/newbot"><span>新建</span></a></li>
+</ul>

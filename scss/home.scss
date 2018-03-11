@@ -1,0 +1,47 @@
+/*
+* @Author: hanjiyun
+* @Date:   2019-01-26 22:49:47
+* @Last Modified by:   hanjiyun
+* @Last Modified time: 2019-01-26 23:23:51
+*/
+
+.bot-list {
+  text-align: center;
+  margin: 40px auto;
+
+  li {
+    &.new {
+      width: 150px;
+      height: 270px;
+      background: rgba(255, 255, 255, .4);
+
+      a {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+
+.message {
+  padding: 30px 0;
+}
+
+a.button  {
+  display: inline-block();
+  zoom: 1;
+  vertical-align: middle;
+  padding: 10px;
+  background: #c00;
+  color: #fff;
+  border-radius: 3px;
+  background: #3fa156;
+  border: 1px solid #528641;
+}
+
+.mamamiya {
+  padding-top: 20px;
+}
