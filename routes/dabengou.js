@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   naoyeye
-* @Last Modified time: 2018-03-12 00:42:17
+* @Last Modified time: 2018-03-12 14:23:51
 */
 
 
@@ -47,12 +47,12 @@ router.get('/', function(req, res, next) {
 
         var autoGetBitcoinPrice = schedule.scheduleJob("*/30 * * * *", function() {
           request.get({
-            url: 'https://api.itbit.com/v1/markets/XBTUSD/ticker',
+            url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/',
             method: 'GET'
           }, function (err, data) {
             var _data = JSON.parse(data.body);
-            latestPrice = parseFloat(_data.lastPrice) + ''
-            console.log('latestPrice = ', latestPrice)
+            latestPrice = _data.last
+            // console.log('latestPrice = ', latestPrice)
 
             // var autoPostStatusTask = schedule.scheduleJob('*/50 * * * *', function () {
               var d = new Date();
@@ -66,7 +66,7 @@ router.get('/', function(req, res, next) {
               
               if (latestPrice) {
                 var text = '1₿ = $' + latestPrice;
-                console.log('text = ', text);
+                // console.log('text = ', text);
                 postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {
 
                 });
@@ -163,7 +163,7 @@ router.get('/auth/douban/callback', function (req, res, next) {
         refresh_token = data.refresh_token;
         currentUserId = data.douban_user_id;
 
-        console.log('accessToken!!', data.access_token);
+        // console.log('accessToken!!', data.access_token);
 
         res.redirect('/');
 
@@ -201,8 +201,8 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
             });
             console.log('===========');
         } else {
-            console.log(date + '\r\nLOL clock success!');
-            console.log('===========');
+            console.log('LOL clock success! ' + text);
+            // console.log('===========');
             // console.log('body = ', body)
         }
 
