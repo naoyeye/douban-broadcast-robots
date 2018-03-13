@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   naoyeye
-* @Last Modified time: 2018-03-12 14:23:51
+* @Last Modified time: 2018-03-13 11:08:44
 */
 
 
@@ -25,7 +25,8 @@ var isLaunched = false;
 var accessToken = null;
 var refresh_token;
 var currentUserId;
-var latestPrice = 0;
+var latestPriceUSD = 0;
+var latestPriceCNY = 0
 var point = 30; // 第几分钟时发布广播
 
 
@@ -51,7 +52,7 @@ router.get('/', function(req, res, next) {
             method: 'GET'
           }, function (err, data) {
             var _data = JSON.parse(data.body);
-            latestPrice = _data.last
+            latestPriceUSD = _data.last
             // console.log('latestPrice = ', latestPrice)
 
             // var autoPostStatusTask = schedule.scheduleJob('*/50 * * * *', function () {
@@ -62,13 +63,21 @@ router.get('/', function(req, res, next) {
               var offset = 8;
               var beijing = utc + (3600000 * offset);
               date = new Date(beijing);
-              // now = date.getHours();
-              
-              if (latestPrice) {
-                var text = '1₿ = $' + latestPrice;
-                // console.log('text = ', text);
-                postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {
 
+              if (latestPriceUSD) {
+                // 获取人民币美元汇率
+                request.get({
+                  url: 'http://api.k780.com/?app=finance.rate&scur=USD&tcur=CNY&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4',
+                  method: 'GET'
+                }, function (rateErr, rateData) {
+                  var _data = JSON.parse(rateData.body);
+                  if (_data.success === '1') {
+                    latestPriceCNY = (latestPriceUSD * _data.result.rate).toFixed(2);
+                    var text = '1₿ ≈ $' + latestPriceUSD + ' ≈ ￥' + latestPriceCNY;
+                    postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {
+
+                    });
+                  }
                 });
               }
 
