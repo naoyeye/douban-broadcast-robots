@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   naoyeye
-* @Last Modified time: 2018-03-19 20:28:26
+* @Last Modified time: 2018-03-20 00:02:53
 */
 
 
@@ -46,7 +46,7 @@ router.get('/', function(req, res, next) {
         // rule.minute = new schedule.Range(0, 59, 5);
 
 
-        var autoGetBitcoinPrice = schedule.scheduleJob("*/28 * * * *", function() {
+        var autoGetBitcoinPrice = schedule.scheduleJob("*/30 * * * *", function() {
           request.get({
             url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/',
             method: 'GET'
