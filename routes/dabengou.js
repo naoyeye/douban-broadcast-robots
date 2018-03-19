@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   naoyeye
-* @Last Modified time: 2018-03-13 11:08:44
+* @Last Modified time: 2018-03-19 20:28:26
 */
 
 
@@ -46,12 +46,13 @@ router.get('/', function(req, res, next) {
         // rule.minute = new schedule.Range(0, 59, 5);
 
 
-        var autoGetBitcoinPrice = schedule.scheduleJob("*/30 * * * *", function() {
+        var autoGetBitcoinPrice = schedule.scheduleJob("*/28 * * * *", function() {
           request.get({
             url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/',
             method: 'GET'
           }, function (err, data) {
             var _data = JSON.parse(data.body);
+            // console.log('_data - ', _data)
             latestPriceUSD = _data.last
             // console.log('latestPrice = ', latestPrice)
 
@@ -64,13 +65,16 @@ router.get('/', function(req, res, next) {
               var beijing = utc + (3600000 * offset);
               date = new Date(beijing);
 
+              // console.log('latestPriceUSD = ', latestPriceUSD)
+
               if (latestPriceUSD) {
                 // 获取人民币美元汇率
                 request.get({
-                  url: 'http://api.k780.com/?app=finance.rate&scur=USD&tcur=CNY&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4',
+                  url: 'http://api.k780.com/?app=finance.rate&scur=USD&tcur=CNY&appkey=32282&sign=4f0a02693e7a594ea448e2d62264242c',
                   method: 'GET'
                 }, function (rateErr, rateData) {
                   var _data = JSON.parse(rateData.body);
+                  // console.log('_data - ', _data)
                   if (_data.success === '1') {
                     latestPriceCNY = (latestPriceUSD * _data.result.rate).toFixed(2);
                     var text = '1₿ ≈ $' + latestPriceUSD + ' ≈ ￥' + latestPriceCNY;
