@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   naoyeye
-* @Last Modified time: 2018-03-20 00:02:53
+* @Last Modified time: 2018-03-30 15:26:55
 */
 
 
@@ -25,8 +25,10 @@ var isLaunched = false;
 var accessToken = null;
 var refresh_token;
 var currentUserId;
-var latestPriceUSD = 0;
-var latestPriceCNY = 0
+var latestPriceBTC = 0;
+var latestPriceBTC2CNY = 0
+var latestPriceEOS = 0;
+var latestPriceEOS2CNY = 0
 var point = 30; // 第几分钟时发布广播
 
 
@@ -53,7 +55,7 @@ router.get('/', function(req, res, next) {
           }, function (err, data) {
             var _data = JSON.parse(data.body);
             // console.log('_data - ', _data)
-            latestPriceUSD = _data.last
+            latestPriceBTC = _data.last
             // console.log('latestPrice = ', latestPrice)
 
             // var autoPostStatusTask = schedule.scheduleJob('*/50 * * * *', function () {
@@ -65,24 +67,37 @@ router.get('/', function(req, res, next) {
               var beijing = utc + (3600000 * offset);
               date = new Date(beijing);
 
-              // console.log('latestPriceUSD = ', latestPriceUSD)
+              // console.log('latestPriceBTC = ', latestPriceBTC)
 
-              if (latestPriceUSD) {
-                // 获取人民币美元汇率
+              if (latestPriceBTC) {
+
+                // 获取 EOS 价格
                 request.get({
-                  url: 'http://api.k780.com/?app=finance.rate&scur=USD&tcur=CNY&appkey=32282&sign=4f0a02693e7a594ea448e2d62264242c',
+                  url: 'https://chasing-coins.com/api/v1/convert/EOS/USD',
                   method: 'GET'
-                }, function (rateErr, rateData) {
-                  var _data = JSON.parse(rateData.body);
-                  // console.log('_data - ', _data)
-                  if (_data.success === '1') {
-                    latestPriceCNY = (latestPriceUSD * _data.result.rate).toFixed(2);
-                    var text = '1₿ ≈ $' + latestPriceUSD + ' ≈ ￥' + latestPriceCNY;
-                    postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {
+                }, function (eosError, eosData) {
+                  if (!eosError) {
+                    latestPriceEOS = JSON.parse(eosData.body).result;
 
+                    // 获取人民币美元汇率
+                    request.get({
+                      url: 'http://api.k780.com/?app=finance.rate&scur=USD&tcur=CNY&appkey=32282&sign=4f0a02693e7a594ea448e2d62264242c',
+                      method: 'GET'
+                    }, function (rateErr, rateData) {
+                      var _data = JSON.parse(rateData.body);
+                      // console.log('_data - ', _data)
+                      if (_data.success === '1') {
+                        latestPriceBTC2CNY = (latestPriceBTC * _data.result.rate).toFixed(2);
+                        latestPriceEOS2CNY = (latestPriceEOS * _data.result.rate).toFixed(2);
+
+                        var text = '1 btc ≈ $' + latestPriceBTC + ' ≈ ￥' + latestPriceBTC2CNY;
+                        text += '\r\n1 eos ≈ $' + latestPriceEOS + ' ≈ ￥' + latestPriceEOS2CNY;
+
+                        postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+                      }
                     });
                   }
-                });
+                })
               }
 
             // });
