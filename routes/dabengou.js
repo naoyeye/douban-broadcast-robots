@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   naoyeye
-* @Last Modified time: 2018-03-30 15:26:55
+* @Last Modified time: 2018-04-19 14:22:08
 */
 
 
@@ -53,12 +53,12 @@ router.get('/', function(req, res, next) {
             url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/',
             method: 'GET'
           }, function (err, data) {
-            var _data = JSON.parse(data.body);
-            // console.log('_data - ', _data)
-            latestPriceBTC = _data.last
-            // console.log('latestPrice = ', latestPrice)
+            if (data &&  data.body) {
 
-            // var autoPostStatusTask = schedule.scheduleJob('*/50 * * * *', function () {
+              var _data = JSON.parse(data.body);
+
+              latestPriceBTC = _data.last
+
               var d = new Date();
               var localTime = d.getTime();
               var localOffset = d.getTimezoneOffset() * 60000;
@@ -67,7 +67,6 @@ router.get('/', function(req, res, next) {
               var beijing = utc + (3600000 * offset);
               date = new Date(beijing);
 
-              // console.log('latestPriceBTC = ', latestPriceBTC)
 
               if (latestPriceBTC) {
 
@@ -99,8 +98,10 @@ router.get('/', function(req, res, next) {
                   }
                 })
               }
+            } else {
+              console.error('获取 btcusd 失败')
+            }
 
-            // });
           });
         })
 
@@ -224,9 +225,9 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
             console.log('===========');
         } else if (err || typeof body.code !== 'undefined') {
             console.error(date + '\r\nFuck! Clock fail!, Error:', err, '\r\n Body:', body);
-            mailSender('FxxK dabenji!', body, function (mailError, mailResponse) {
-                console.log('Sender feedback:', mailError, mailResponse);
-            });
+            // mailSender('FxxK dabenji!', body, function (mailError, mailResponse) {
+            //     console.log('Sender feedback:', mailError, mailResponse);
+            // });
             console.log('===========');
         } else {
             console.log('LOL clock success! ' + text);
