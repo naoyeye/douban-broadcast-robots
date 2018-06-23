@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-06-24 01:22:32
+* @Last Modified time: 2018-06-24 01:48:00
 */
 
 
@@ -82,9 +82,8 @@ router.get('/', function(req, res, next) {
                     request.get({
                       url: 'http://apilayer.net/api/live?access_key=ae794307cd88fe5c654ef04a6b05442f&source=USD&currencies=CNY&format=1',
                       method: 'GET'
-                    }, function (data) {
-                      // var _data = JSON.parse(rateData.body);
-                      // console.log('_data - ', _data)
+                    }, function (error, resp) {
+                      var data = JSON.parse(resp.body);
                       if (data.success) {
                         latestPriceBTC2CNY = (latestPriceBTC * data.quotes.USDCNY).toFixed(2);
                         latestPriceEOS2CNY = (latestPriceEOS * data.quotes.USDCNY).toFixed(2);
