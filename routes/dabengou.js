@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-06-24 01:48:00
+* @Last Modified time: 2018-07-07 16:25:13
 */
 
 
@@ -215,29 +215,30 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
             headers: {'Authorization': 'Bearer ' + accessToken},
             // timeout: 70000 // 7秒超时吧
         }, function (err, httpResponse, body) {
-        if (err && err.code === 106) {
-            console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
+          if (err && err.code === 106) {
+              console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
 
-            refreshToken(refresh_token, text, date, callback);
+              refreshToken(refresh_token, text, date, callback);
 
 
-            console.log('===========');
-        } else if (err || typeof body.code !== 'undefined') {
-            console.error(date + '\r\nFuck! Clock fail!, Error:', err, '\r\n Body:', body);
-            // mailSender('FxxK dabenji!', body, function (mailError, mailResponse) {
-            //     console.log('Sender feedback:', mailError, mailResponse);
-            // });
-            console.log('===========');
-        } else {
-            console.log('LOL clock success! ' + text);
-            // console.log('===========');
-            // console.log('body = ', body)
-        }
+              console.log('===========');
+          } else if (err || typeof body.code !== 'undefined') {
+              console.error(date + '\r\nFuck! Clock fail!, Error:', err, '\r\n Body:', body);
+              // mailSender('FxxK dabenji!', body, function (mailError, mailResponse) {
+              //     console.log('Sender feedback:', mailError, mailResponse);
+              // });
+              console.log('===========');
+          } else {
+              console.log('LOL clock success! ' + text);
+              // console.log('===========');
+              // console.log('body = ', body)
+          }
 
-        if (callback && typeof callback === 'function') {
-            callback(err, httpResponse, body);
-        }
-    });
+          if (callback && typeof callback === 'function') {
+              callback(err, httpResponse, body);
+          }
+      }
+    );
 
     var form = r.form();
     form.append('text', text);
