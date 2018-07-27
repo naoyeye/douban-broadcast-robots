@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-07-27 13:58:14
+* @Last Modified time: 2018-07-27 21:44:54
 */
 
 
@@ -80,35 +80,34 @@ router.get('/', function(req, res, next) {
                     latestPriceEOS = JSON.parse(eosData.body).result;
 
                      // eth
-                if (latestPriceEOS) {
-                     request.get({
+                    if (latestPriceEOS) {
+                      request.get({
                          url: 'https://chasing-coins.com/api/v1/convert/ETH/USD',
                          method: 'GET'
-                     }, function (ethError, ethData) {
-                       if (!ethError) {
-                           latestPriceETH = JSON.parse(ethData.body).result;
+                      }, function (ethError, ethData) {
+                        if (!ethError) {
+                          latestPriceETH = JSON.parse(ethData.body).result;
+                          var text = '1 btc ≈ $' + latestPriceBTC;
+                          text += '\r\n1 eos ≈ $' + latestPriceEOS;
+                          text += '\r\n1 eth ≈ $' + latestPriceETH;
 
-                           var text = '1 btc ≈ $' + latestPriceBTC;
-
-                           text += '\r\n1 eos ≈ $' + latestPriceEOS;
-
-                           text += '\r\n1 eth ≈ $' + latestPriceETH;
-                           console.log(text)
-
-                           postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
-                       }
-                     });
+                          postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+                        } else {
+                          console.error('获取 eth/usd 失败')
+                        }
+                      });
                     }
+                  } else {
+                    console.error('获取 eos/usd 失败')
                   }
                 })
               }
             } else {
-              console.error('获取 btcusd 失败')
+              console.error('获取 btc/usd 失败')
             }
 
           });
         })
-
 
         isLaunched = true;
 
