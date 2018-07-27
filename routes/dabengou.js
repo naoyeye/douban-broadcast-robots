@@ -28,6 +28,7 @@ var currentUserId;
 var latestPriceBTC = 0;
 var latestPriceBTC2CNY = 0
 var latestPriceEOS = 0;
+var latestPriceETH = 0;
 var latestPriceEOS2CNY = 0
 var point = 30; // 第几分钟时发布广播
 
@@ -78,28 +79,26 @@ router.get('/', function(req, res, next) {
                   if (!eosError) {
                     latestPriceEOS = JSON.parse(eosData.body).result;
 
-                    var text = '1 btc ≈ $' + latestPriceBTC;
+                     // eth
+                if (latestPriceEOS) {
+                     request.get({
+                         url: 'https://chasing-coins.com/api/v1/convert/ETH/USD',
+                         method: 'GET'
+                     }, function (ethError, ethData) {
+                       if (!ethError) {
+                           latestPriceETH = JSON.parse(ethData.body).result;
 
-                    text += '\r\n1 eos ≈ $' + latestPriceEOS;
+                           var text = '1 btc ≈ $' + latestPriceBTC;
 
-                    postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+                           text += '\r\n1 eos ≈ $' + latestPriceEOS;
 
-                    // // 获取人民币美元汇率
-                    // request.get({
-                    //   url: 'http://apilayer.net/api/live?access_key=ae794307cd88fe5c654ef04a6b05442f&source=USD&currencies=CNY&format=1',
-                    //   method: 'GET'
-                    // }, function (error, resp) {
-                    //   var data = JSON.parse(resp.body);
-                    //   if (data.success) {
-                    //     latestPriceBTC2CNY = (latestPriceBTC * data.quotes.USDCNY).toFixed(2);
-                    //     latestPriceEOS2CNY = (latestPriceEOS * data.quotes.USDCNY).toFixed(2);
+                           text += '\r\n1 eth ≈ $' + latestPriceETH;
+                           console.log(text)
 
-                    //     var text = '1 btc ≈ $' + latestPriceBTC + ' ≈ ￥' + latestPriceBTC2CNY;
-                    //     text += '\r\n1 eos ≈ $' + latestPriceEOS + ' ≈ ￥' + latestPriceEOS2CNY;
-
-                    //     postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
-                    //   }
-                    // });
+                           postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+                       }
+                     });
+                    }
                   }
                 })
               }
