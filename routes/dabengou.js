@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-07-07 16:25:13
+* @Last Modified time: 2018-07-27 13:58:14
 */
 
 
@@ -78,22 +78,28 @@ router.get('/', function(req, res, next) {
                   if (!eosError) {
                     latestPriceEOS = JSON.parse(eosData.body).result;
 
-                    // 获取人民币美元汇率
-                    request.get({
-                      url: 'http://apilayer.net/api/live?access_key=ae794307cd88fe5c654ef04a6b05442f&source=USD&currencies=CNY&format=1',
-                      method: 'GET'
-                    }, function (error, resp) {
-                      var data = JSON.parse(resp.body);
-                      if (data.success) {
-                        latestPriceBTC2CNY = (latestPriceBTC * data.quotes.USDCNY).toFixed(2);
-                        latestPriceEOS2CNY = (latestPriceEOS * data.quotes.USDCNY).toFixed(2);
+                    var text = '1 btc ≈ $' + latestPriceBTC;
 
-                        var text = '1 btc ≈ $' + latestPriceBTC + ' ≈ ￥' + latestPriceBTC2CNY;
-                        text += '\r\n1 eos ≈ $' + latestPriceEOS + ' ≈ ￥' + latestPriceEOS2CNY;
+                    text += '\r\n1 eos ≈ $' + latestPriceEOS;
 
-                        postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
-                      }
-                    });
+                    postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+
+                    // // 获取人民币美元汇率
+                    // request.get({
+                    //   url: 'http://apilayer.net/api/live?access_key=ae794307cd88fe5c654ef04a6b05442f&source=USD&currencies=CNY&format=1',
+                    //   method: 'GET'
+                    // }, function (error, resp) {
+                    //   var data = JSON.parse(resp.body);
+                    //   if (data.success) {
+                    //     latestPriceBTC2CNY = (latestPriceBTC * data.quotes.USDCNY).toFixed(2);
+                    //     latestPriceEOS2CNY = (latestPriceEOS * data.quotes.USDCNY).toFixed(2);
+
+                    //     var text = '1 btc ≈ $' + latestPriceBTC + ' ≈ ￥' + latestPriceBTC2CNY;
+                    //     text += '\r\n1 eos ≈ $' + latestPriceEOS + ' ≈ ￥' + latestPriceEOS2CNY;
+
+                    //     postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+                    //   }
+                    // });
                   }
                 })
               }
