@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-06 00:08:55
+* @Last Modified time: 2018-08-06 04:52:22
 */
 
 
@@ -90,23 +90,31 @@ router.get('/', function(req, res, next) {
                           latestPriceETH = JSON.parse(ethData.body).result;
 
                           if (latestPriceETH) {
-                            request.get({
-                               url: 'https://chasing-coins.com/api/v1/convert/HT/BTC',
-                               method: 'GET'
-                            }, function (htError, htData) {
-                              latestPriceHT = JSON.parse(ethData.body).result;
+                            var text = '1 btc ≈ $' + latestPriceBTC;
+                            text += '\r\n1 eos ≈ $' + latestPriceEOS;
+                            text += '\r\n1 eth ≈ $' + latestPriceETH;
 
-                              if (latestPriceHT) {
-                                var text = '1 btc ≈ $' + latestPriceBTC;
-                                text += '\r\n1 eos ≈ $' + latestPriceEOS;
-                                text += '\r\n1 eth ≈ $' + latestPriceETH;
-                                text += '\r\n1 ht ≈ ' + latestPriceHT + 'btc'
+                            postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
 
-                                postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
-                              } else {
-                                console.error('获取 ht/btc 失败')
-                              }
-                            })
+                          //   request.get({
+                          //      url: 'https://chasing-coins.com/api/v1/convert/HT/BTC',
+                          //      method: 'GET'
+                          //   }, function (htError, htData) {
+                          //     latestPriceHT = `${JSON.parse(ethData.body).result}`;
+
+                          //     if (latestPriceHT) {
+                          //       var text = '1 btc ≈ $' + latestPriceBTC;
+                          //       text += '\r\n1 eos ≈ $' + latestPriceEOS;
+                          //       text += '\r\n1 eth ≈ $' + latestPriceETH;
+                          //       text += '\r\n1 ht ≈ ' + latestPriceHT + 'btc';
+
+                          //       console.log('1 ht ≈ ' + latestPriceHT + 'btc');
+
+                          //       postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+                          //     } else {
+                          //       console.error('获取 ht/btc 失败');
+                          //     }
+                          //   })
                           }
                         } else {
                           console.error('获取 eth/usd 失败')
