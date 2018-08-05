@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-07-27 21:44:54
+* @Last Modified time: 2018-08-06 00:08:55
 */
 
 
@@ -29,6 +29,7 @@ var latestPriceBTC = 0;
 var latestPriceBTC2CNY = 0
 var latestPriceEOS = 0;
 var latestPriceETH = 0;
+var latestPriceHT = 0;
 var latestPriceEOS2CNY = 0
 var point = 30; // 第几分钟时发布广播
 
@@ -87,11 +88,26 @@ router.get('/', function(req, res, next) {
                       }, function (ethError, ethData) {
                         if (!ethError) {
                           latestPriceETH = JSON.parse(ethData.body).result;
-                          var text = '1 btc ≈ $' + latestPriceBTC;
-                          text += '\r\n1 eos ≈ $' + latestPriceEOS;
-                          text += '\r\n1 eth ≈ $' + latestPriceETH;
 
-                          postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+                          if (latestPriceETH) {
+                            request.get({
+                               url: 'https://chasing-coins.com/api/v1/convert/HT/BTC',
+                               method: 'GET'
+                            }, function (htError, htData) {
+                              latestPriceHT = JSON.parse(ethData.body).result;
+
+                              if (latestPriceHT) {
+                                var text = '1 btc ≈ $' + latestPriceBTC;
+                                text += '\r\n1 eos ≈ $' + latestPriceEOS;
+                                text += '\r\n1 eth ≈ $' + latestPriceETH;
+                                text += '\r\n1 ht ≈ ' + latestPriceHT + 'btc'
+
+                                postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
+                              } else {
+                                console.error('获取 ht/btc 失败')
+                              }
+                            })
+                          }
                         } else {
                           console.error('获取 eth/usd 失败')
                         }
