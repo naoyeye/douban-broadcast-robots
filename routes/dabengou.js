@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-07 13:06:05
+* @Last Modified time: 2018-08-07 14:07:31
 */
 
 
@@ -108,8 +108,8 @@ router.get('/', function(req, res, next) {
                                 text += '\r\n1 eth ≈ $' + latestPriceETH;
                                 // text += '\r\n1 ht ≈ ' + latestPriceHT + 'btc';
 
-                                let textText = text
-                                textText += '\r\n1 ht ≈ ' + latestPriceHT + 'btc';
+                                let textText = `btc = ${latestPriceBTC}, eos = ${latestPriceEOS}, eth = ${latestPriceETH}, ht = ${latestPriceHT}`;
+                                console.log(textText)
 
                                 postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
                               } else {
