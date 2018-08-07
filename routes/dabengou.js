@@ -243,6 +243,8 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
             headers: {'Authorization': 'Bearer ' + accessToken},
             // timeout: 70000 // 7秒超时吧
         }, function (err, httpResponse, body) {
+          console.log('*****unknown err after postToDouban******')
+          console.error(err)
           if (err && err.code === 106) {
               console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
 
@@ -257,7 +259,7 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
               // });
               console.log('===========');
           } else {
-              console.log('LOL clock success! ' + text);
+              console.log('LOL clock success! \r\n' + text);
               // console.log('===========');
               // console.log('body = ', body)
           }
