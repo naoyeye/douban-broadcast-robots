@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-07 14:07:31
+* @Last Modified time: 2018-08-07 14:34:55
 */
 
 
@@ -100,7 +100,7 @@ router.get('/', function(req, res, next) {
                                url: 'https://chasing-coins.com/api/v1/convert/HT/BTC',
                                method: 'GET'
                             }, function (htError, htData) {
-                              latestPriceHT = `${JSON.parse(ethData.body).result}`;
+                              latestPriceHT = `${JSON.parse(htData.body).result}`;
 
                               if (latestPriceHT) {
                                 var text = '1 btc ≈ $' + latestPriceBTC;
