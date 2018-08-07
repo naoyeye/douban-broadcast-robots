@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-07 14:34:55
+* @Last Modified time: 2018-08-07 14:42:29
 */
 
 
@@ -106,10 +106,10 @@ router.get('/', function(req, res, next) {
                                 var text = '1 btc ≈ $' + latestPriceBTC;
                                 text += '\r\n1 eos ≈ $' + latestPriceEOS;
                                 text += '\r\n1 eth ≈ $' + latestPriceETH;
-                                // text += '\r\n1 ht ≈ ' + latestPriceHT + 'btc';
+                                text += '\r\n1 ht ≈ ₿' + latestPriceHT;
 
-                                let textText = `btc = ${latestPriceBTC}, eos = ${latestPriceEOS}, eth = ${latestPriceETH}, ht = ${latestPriceHT}`;
-                                console.log(textText)
+                                // let textText = `btc = ${latestPriceBTC}, eos = ${latestPriceEOS}, eth = ${latestPriceETH}, ht = ${latestPriceHT}`;
+                                // console.log(textText)
 
                                 postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
                               } else {
