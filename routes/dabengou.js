@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-10 11:00:17
+* @Last Modified time: 2018-08-10 11:55:01
 */
 
 
@@ -245,8 +245,9 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
         // timeout: 70000 // 7秒超时吧
     }, function (err, httpResponse, body) {
       console.log('*****unknown err after postToDouban******')
-      console.error('err = ', err)
-      console.error('httpResponse = ', httpResponse)
+      console.log('err = ', err)
+      console.log('body = ', body)
+      console.log('httpResponse = ', httpResponse.statusCode)
 
       if (err && err.code === 106) {
         console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
