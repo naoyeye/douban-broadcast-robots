@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-07 14:42:29
+* @Last Modified time: 2018-08-10 11:00:17
 */
 
 
@@ -238,44 +238,45 @@ router.use('/reAuth', function (req, res, next) {
 
 
 function postToDouban (accessToken, refresh_token, text, date, callback) {
-    // 带图版
-    var r = request.post('https://api.douban.com/shuo/v2/statuses/', {
-            method: 'POST',
-            headers: {'Authorization': 'Bearer ' + accessToken},
-            // timeout: 70000 // 7秒超时吧
-        }, function (err, httpResponse, body) {
-          console.log('*****unknown err after postToDouban******')
-          console.error(err)
-          if (err && err.code === 106) {
-              console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
+  // 带图版
+  var r = request.post('https://api.douban.com/shuo/v2/statuses/', {
+        method: 'POST',
+        headers: {'Authorization': 'Bearer ' + accessToken},
+        // timeout: 70000 // 7秒超时吧
+    }, function (err, httpResponse, body) {
+      console.log('*****unknown err after postToDouban******')
+      console.error('err = ', err)
+      console.error('httpResponse = ', httpResponse)
 
-              refreshToken(refresh_token, text, date, callback);
+      if (err && err.code === 106) {
+        console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
 
+        refreshToken(refresh_token, text, date, callback);
 
-              console.log('===========');
-          } else if (err || typeof body.code !== 'undefined') {
-              console.error(date + '\r\nFuck! Clock fail!, Error:', err, '\r\n Body:', body);
-              // mailSender('FxxK dabenji!', body, function (mailError, mailResponse) {
-              //     console.log('Sender feedback:', mailError, mailResponse);
-              // });
-              console.log('===========');
-          } else {
-              console.log('LOL clock success! \r\n' + text);
-              // console.log('===========');
-              // console.log('body = ', body)
-          }
-
-          if (callback && typeof callback === 'function') {
-              callback(err, httpResponse, body);
-          }
+        console.log('===========');
+      } else if (err || typeof body.code !== 'undefined') {
+        console.error(date + '\r\nFuck! Clock fail!, Error:', err, '\r\n Body:', body);
+        // mailSender('FxxK dabenji!', body, function (mailError, mailResponse) {
+        //     console.log('Sender feedback:', mailError, mailResponse);
+        // });
+        console.log('===========');
+      } else {
+        console.log('LOL clock success! \r\n' + text);
+        // console.log('===========');
+        // console.log('body = ', body)
       }
-    );
 
-    var form = r.form();
-    form.append('text', text);
-    if (enableImage) {
-        form.append('image', request.get(imageUrl));
+      if (callback && typeof callback === 'function') {
+        callback(err, httpResponse, body);
+      }
     }
+  );
+
+  var form = r.form();
+  form.append('text', text);
+  if (enableImage) {
+    form.append('image', request.get(imageUrl));
+  }
 }
 
 
