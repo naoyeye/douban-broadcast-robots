@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-10 11:55:01
+* @Last Modified time: 2018-08-18 16:44:46
 */
 
 
@@ -249,7 +249,7 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
       console.log('body = ', body)
       console.log('httpResponse = ', httpResponse.statusCode)
 
-      if (err && err.code === 106) {
+      if (body.code === 106) {
         console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
 
         refreshToken(refresh_token, text, date, callback);
