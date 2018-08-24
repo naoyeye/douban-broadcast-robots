@@ -95,12 +95,12 @@ router.get('/', function(req, res, next) {
                             // text += '\r\n1 eth ≈ $' + latestPriceETH;
 
                             // postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
-
+                            // new api: https://api.coinmarketcap.com/v2/ticker/2502/?convert=BTC
                             request.get({
-                               url: 'https://chasing-coins.com/api/v1/convert/HT/BTC',
+                               url: 'https://api.coinmarketcap.com/v2/ticker/2502/?convert=BTC',
                                method: 'GET'
                             }, function (htError, htData) {
-                              latestPriceHT = `${JSON.parse(htData.body).result}`;
+                              latestPriceHT = `${JSON.parse(htData.body).data.quotes.BTC.price}`;
 
                               if (latestPriceHT) {
                                 var text = '1 btc ≈ $' + latestPriceBTC;
