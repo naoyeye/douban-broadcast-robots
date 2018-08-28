@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-18 16:44:46
+* @Last Modified time: 2018-08-28 17:34:44
 */
 
 
@@ -17,163 +17,123 @@ var schedule = require('node-schedule');
 
 var date;
 var now;
-var enableImage = false; // 关闭图片附件
 
+var enableImage = false; // 关闭图片附件
 var imageUrl = 'http://dabenji.doubanclock.com/pic/test-small.gif';
+
 var isLaunched = false;
 
 var accessToken = null;
 var refresh_token;
 var currentUserId;
+
 var latestPriceBTC = 0;
-var latestPriceBTC2CNY = 0
 var latestPriceEOS = 0;
 var latestPriceETH = 0;
 var latestPriceHT = 0;
-var latestPriceEOS2CNY = 0
 var point = 30; // 第几分钟时发布广播
 
+const PromisifyGET = (options) => {
+  return new Promise((resolve, reject) => {
+    request.get(options, (err, httpResponse, body) => {
+      if (err || httpResponse.statusCode !== 200) {
+        reject(err)
+        return
+      }
+      resolve(JSON.parse(body))
+    })
+  })
+}
 
 router.get('/', function(req, res, next) {
   if (accessToken) {
-
     if (config.userId.indexOf(currentUserId) >= 0) {
       if (!isLaunched) {
+        // 定时任务
+        const ScheduleJob = schedule.scheduleJob(`*/${point} * * * *`, () => {
 
-        // var ruleGetBitcoinPrice = new schedule.RecurrenceRule();
-        // ruleGetBitcoinPrice.minute = '*/19 * * * *';
+          // api 请求列表
+          const apiRequestList = [
+            // btc-usd
+            PromisifyGET({
+              url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/'
+            }),
+            // eos-usd
+            PromisifyGET({
+              url: 'https://api.coinmarketcap.com/v2/ticker/1765/?convert=USD'
+            }),
+            // eth-usd
+            PromisifyGET({
+              url: 'https://api.coinmarketcap.com/v2/ticker/1027/?convert=USD'
+            }),
+            // ht-btc
+            PromisifyGET({
+              url: 'https://api.coinmarketcap.com/v2/ticker/2502/?convert=BTC'
+            })
+          ]
 
-        // var rulePostStatus = new schedule.RecurrenceRule();
-        // rulePostStatus.minute = '*/20 * * * *'; // 整点发广播
-        
-        // var rule = new schedule.RecurrenceRule();
-        // rule.minute = new schedule.Range(0, 59, 5);
+          Promise.all(apiRequestList).then(resList => {
+            const latestPriceBTC = `${resList[0].last}`
+            const latestPriceEOS = `${resList[1].data.quotes.USD.price}`
+            const latestPriceETH = `${resList[2].data.quotes.USD.price}`
+            const latestPriceHT = `${resList[3].data.quotes.BTC.price}`
 
+            const text = `1 btc ≈ $${latestPriceBTC}\r\n1 eos ≈ $${latestPriceEOS}\r\n1 eth ≈ $${latestPriceETH}\r\n1 ht ≈ ₿${latestPriceHT}`
 
-        var autoGetBitcoinPrice = schedule.scheduleJob("*/30 * * * *", function() {
-          request.get({
-            url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/',
-            method: 'GET'
-          }, function (err, data) {
-            if (data &&  data.body) {
+            // 发送到豆瓣广播
+            postToDouban(accessToken, refresh_token, text, (err, httpResponse, body) => {})
 
-              var _data = JSON.parse(data.body);
-
-              latestPriceBTC = _data.last
-
-              var d = new Date();
-              var localTime = d.getTime();
-              var localOffset = d.getTimezoneOffset() * 60000;
-              var utc = localTime + localOffset;
-              var offset = 8;
-              var beijing = utc + (3600000 * offset);
-              date = new Date(beijing);
-
-
-              if (latestPriceBTC) {
-
-                // 获取 EOS 价格
-                request.get({
-                  url: 'https://chasing-coins.com/api/v1/convert/EOS/USD',
-                  method: 'GET'
-                }, function (eosError, eosData) {
-                  if (!eosError) {
-                    latestPriceEOS = JSON.parse(eosData.body).result;
-
-                     // eth
-                    if (latestPriceEOS) {
-                      request.get({
-                         url: 'https://chasing-coins.com/api/v1/convert/ETH/USD',
-                         method: 'GET'
-                      }, function (ethError, ethData) {
-                        if (!ethError) {
-                          latestPriceETH = JSON.parse(ethData.body).result;
-
-                          if (latestPriceETH) {
-                            // var text = '1 btc ≈ $' + latestPriceBTC;
-                            // text += '\r\n1 eos ≈ $' + latestPriceEOS;
-                            // text += '\r\n1 eth ≈ $' + latestPriceETH;
-
-                            // postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
-                            // new api: https://api.coinmarketcap.com/v2/ticker/2502/?convert=BTC
-                            request.get({
-                               url: 'https://api.coinmarketcap.com/v2/ticker/2502/?convert=BTC',
-                               method: 'GET'
-                            }, function (htError, htData) {
-                              latestPriceHT = `${JSON.parse(htData.body).data.quotes.BTC.price}`;
-
-                              if (latestPriceHT) {
-                                var text = '1 btc ≈ $' + latestPriceBTC;
-                                text += '\r\n1 eos ≈ $' + latestPriceEOS;
-                                text += '\r\n1 eth ≈ $' + latestPriceETH;
-                                text += '\r\n1 ht ≈ ₿' + latestPriceHT;
-
-                                // let textText = `btc = ${latestPriceBTC}, eos = ${latestPriceEOS}, eth = ${latestPriceETH}, ht = ${latestPriceHT}`;
-                                // console.log(textText)
-
-                                postToDouban(accessToken, refresh_token, text, date, function (err, httpResponse, body) {});
-                              } else {
-                                console.error('获取 ht/btc 失败');
-                              }
-                            })
-                          }
-                        } else {
-                          console.error('获取 eth/usd 失败')
-                        }
-                      });
-                    }
-                  } else {
-                    console.error('获取 eos/usd 失败')
-                  }
-                })
-              }
-            } else {
+          }).catch(errList => {
+            if (errList[0]) {
               console.error('获取 btc/usd 失败')
             }
-
-          });
+            if (errList[1]) {
+              console.error('获取 eos/usd 失败')
+            }
+            if (errList[2]) {
+              console.error('获取 eth/usd 失败')
+            }
+            if (errList[3]) {
+              console.error('获取 ht/btc 失败')
+            }
+          })
         })
 
+        // 启动成功改变状态
         isLaunched = true;
 
-        var data = {
+        // 渲染页面
+        res.render('index', {
           currentUser: true,
           tryLogged: true,
           message: '欢迎大笨狗，嘻嘻嘻嘻嘻！',
           imageUrl: enableImage ?  imageUrl : ''
-        }
-
-        res.render('index', data);
-
+        })
 
       } else {
-        var data = {
+        res.render('index', {
           currentUser: true,
           tryLogged: true,
           message: '欢迎大笨狗，哈哈哈哈哈哈！',
           imageUrl: enableImage ?  imageUrl : ''
-        }
-        res.render('index', data);
+        });
       }
 
     } else {
-      var data = {
+      res.render('index', {
         currentUser: false,
         tryLogged: true,
         message: '你不是大笨狗',
         imageUrl: enableImage ?  imageUrl : ''
-      }
-      res.render('index', data);
+      });
     }
-
   } else {
-    var data = {
+    res.render('index', {
       currentUser: false,
       tryLogged: false,
       message: '你是大笨狗吗？不是大笨狗不要点下面的按钮。',
       imageUrl: enableImage ?  imageUrl : ''
-    }
-    res.render('index', data);
+    });
   }
 });
 
@@ -229,30 +189,34 @@ router.get('/auth/douban/callback', function (req, res, next) {
 
 
 router.use('/reAuth', function (req, res, next) {
-    accessToken = null;
-    refresh_token = null;
-    currentUserId = null;
+  accessToken = null;
+  refresh_token = null;
+  currentUserId = null;
 
-    res.redirect('/');
+  res.redirect('/');
 });
 
 
-function postToDouban (accessToken, refresh_token, text, date, callback) {
+function postToDouban (accessToken, refresh_token, text, callback) {
+
+  const d = new Date();
+  const localTime = d.getTime();
+  const localOffset = d.getTimezoneOffset() * 60000;
+  const utc = localTime + localOffset;
+  const offset = 8;
+  const beijing = utc + (3600000 * offset);
+  date = new Date(beijing);
+
   // 带图版
   var r = request.post('https://api.douban.com/shuo/v2/statuses/', {
         method: 'POST',
         headers: {'Authorization': 'Bearer ' + accessToken},
         // timeout: 70000 // 7秒超时吧
     }, function (err, httpResponse, body) {
-      console.log('*****unknown err after postToDouban******')
-      console.log('err = ', err)
-      console.log('body = ', body)
-      console.log('httpResponse = ', httpResponse.statusCode)
-
       if (body.code === 106) {
         console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
 
-        refreshToken(refresh_token, text, date, callback);
+        refreshToken(refresh_token, text, callback);
 
         console.log('===========');
       } else if (err || typeof body.code !== 'undefined') {
@@ -281,7 +245,7 @@ function postToDouban (accessToken, refresh_token, text, date, callback) {
 }
 
 
-function refreshToken (refresh_token, text, date, callback) {
+function refreshToken (refresh_token, text, callback) {
     var client_id = config.douban.apiKey;
     var client_secret = config.douban.Secret;
     var redirect_uri = config.douban.redirect_uri;
@@ -292,7 +256,7 @@ function refreshToken (refresh_token, text, date, callback) {
         if (!error && response.statusCode === 200) {
             accessToken = resBody.access_token;
             refresh_token = resBody.refresh_token;
-            postToDouban(accessToken, refresh_token, text, date, function () {
+            postToDouban(accessToken, refresh_token, text, function () {
               console.log('刷新 token 并广播成功');
             });
         } else {
