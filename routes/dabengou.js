@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-08-28 17:34:44
+* @Last Modified time: 2018-09-05 15:50:06
 */
 
 
@@ -213,6 +213,9 @@ function postToDouban (accessToken, refresh_token, text, callback) {
         headers: {'Authorization': 'Bearer ' + accessToken},
         // timeout: 70000 // 7秒超时吧
     }, function (err, httpResponse, body) {
+      console.log(typeof body, 'body = ', body)
+      console.log('body.code = ', body.code, typeof body.code)
+
       if (body.code === 106) {
         console.error(date + '\r\nHoly fuck! Clock fail! We need to refresh token!', err);
 
