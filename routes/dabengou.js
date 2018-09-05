@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-09-05 15:50:06
+* @Last Modified time: 2018-09-05 15:56:41
 */
 
 
@@ -74,8 +74,8 @@ router.get('/', function(req, res, next) {
 
           Promise.all(apiRequestList).then(resList => {
             const latestPriceBTC = `${resList[0].last}`
-            const latestPriceEOS = `${resList[1].data.quotes.USD.price}`
-            const latestPriceETH = `${resList[2].data.quotes.USD.price}`
+            const latestPriceEOS = `${parseFloat(resList[1].data.quotes.USD.price).toFixed(2)}`
+            const latestPriceETH = `${parseFloat(resList[2].data.quotes.USD.price).toFixed(2)}`
             const latestPriceHT = `${resList[3].data.quotes.BTC.price}`
 
             const text = `1 btc ≈ $${latestPriceBTC}\r\n1 eos ≈ $${latestPriceEOS}\r\n1 eth ≈ $${latestPriceETH}\r\n1 ht ≈ ₿${latestPriceHT}`
