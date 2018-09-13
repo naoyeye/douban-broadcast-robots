@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:03:33
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-09-05 15:56:41
+* @Last Modified time: 2018-09-13 16:34:55
 */
 
 
@@ -213,7 +213,7 @@ function postToDouban (accessToken, refresh_token, text, callback) {
         headers: {'Authorization': 'Bearer ' + accessToken},
         // timeout: 70000 // 7秒超时吧
     }, function (err, httpResponse, body) {
-      console.log(typeof body, 'body = ', body)
+      body = JSON.parse(body)
       console.log('body.code = ', body.code, typeof body.code)
 
       if (body.code === 106) {
@@ -249,23 +249,27 @@ function postToDouban (accessToken, refresh_token, text, callback) {
 
 
 function refreshToken (refresh_token, text, callback) {
-    var client_id = config.douban.apiKey;
-    var client_secret = config.douban.Secret;
-    var redirect_uri = config.douban.redirect_uri;
+  let client_id = config.douban.apiKey;
+  let client_secret = config.douban.Secret;
+  let redirect_uri = config.douban.redirect_uri;
 
-    request.post({
-        url: 'https://www.douban.com/service/auth2/token?client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=' + redirect_uri + '&grant_type=refresh_token&refresh_token=' + refresh_token,
-    }, function (error, response, resBody) {
-        if (!error && response.statusCode === 200) {
-            accessToken = resBody.access_token;
-            refresh_token = resBody.refresh_token;
-            postToDouban(accessToken, refresh_token, text, function () {
-              console.log('刷新 token 并广播成功');
-            });
-        } else {
-            console.error(date + 'refresh_token fail!', error, resBody);
-        }
-    });
+  request.post({
+    url: `https://www.douban.com/service/auth2/token?client_id=${client_id}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&grant_type=refresh_token&refresh_token=${refresh_token}`,
+  }, (error, response, resBody) => {
+    resBody = JSON.parse(resBody)
+    if (!error && response.statusCode === 200) {
+      // 更新全局的 accessToken 和 refresh_token
+      accessToken = resBody.access_token;
+      refresh_token = resBody.refresh_token;
+
+      // 重新发布广播
+      postToDouban(accessToken, refresh_token, text, () => {
+        console.log('刷新 token 并广播成功');
+      });
+    } else {
+      console.error(date + 'refresh_token fail!', error, resBody);
+    }
+  });
 }
 
 module.exports = router;
