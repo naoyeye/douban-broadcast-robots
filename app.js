@@ -42,9 +42,8 @@ app.use(cookieParser());
 //   res.render('index', { currentTime: new Date() });
 // });
 
-// 可以将一类的路由单独保存在一个文件中
+// 新版大笨狗
 app.use('/', require('./routes/dabengou'));
-// app.use('/todos', require('./routes/dabengou'));
 
 // 给面试实习生提供的临时接口
 app.use('/person', require('./routes/person'));
