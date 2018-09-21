@@ -2,7 +2,7 @@
 * @Author: hanjiyun
 * @Date:   2018-09-21 16:25:08
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-09-21 19:51:17
+* @Last Modified time: 2018-09-21 19:56:12
 */
 
 
@@ -20,7 +20,7 @@ var latestPriceBTC = 0;
 var latestPriceEOS = 0;
 var latestPriceETH = 0;
 var latestPriceHT = 0;
-var point = 5; // 第几分钟时发布广播
+var point = 20; // 第几分钟时发布广播
 
 
 const PromisifyGET = (options) => {
@@ -150,7 +150,7 @@ function run() {
 
   getText()
 
-  ns.scheduleJob(`30 */${point} * * * *`, () => {
+  ns.scheduleJob(`*/${point} * * * *`, () => {
     getText()
   })
 }
