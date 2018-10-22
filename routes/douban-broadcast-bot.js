@@ -2,7 +2,7 @@
 * @Author: hanjiyun
 * @Date:   2018-09-21 16:25:08
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-10-22 19:18:05
+* @Last Modified time: 2018-10-22 19:36:25
 */
 
 
@@ -45,20 +45,21 @@ function postBroadcast(text) {
     rp.post({
       url: 'https://m.douban.com/rexxar/api/v2/status/create_status',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Mobile Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
         'Referer': `https://m.douban.com/status/`,
         'Origin': 'https://m.douban.com',
         'Host': 'm.douban.com',
-        'Cookie': `ll="108288"; bid=Vr0BxuvScWw; viewed="1417805"; _vwo_uuid_v2=1F51885829EC8E5F35676E8A61D7CEB8|0a20ca1b31aa8a07bc5260cc095ec9f2; _ga=GA1.2.1771395678.1510888474; _ga=GA1.3.1771395678.1510888474; __yadk_uid=IlhLGT8addwcULd9fDzpaEcxEFYHCMEu; push_doumail_num=0; douban-profile-remind=1; ue="naoyeye@126.com"; __utmv=30149280.17524; douban-fav-remind=1; __utmc=30149280; frodotk="00c6918fb7c2c3940253b4af27484abc"; talionusr="eyJpZCI6ICIxNzUyNDgyNzYiLCAibmFtZSI6ICJcdThjNDZcdTc0ZTNcdTU5MjdcdTdiMjhcdTcyZDcifQ=="; __ads_session=okmmfDIUKgkGtCIAggA=; talionnav_show_app="0"; ap_v=0,6.0; __utma=30149280.1771395678.1510888474.1538635021.1540205417.118; __utmz=30149280.1540205417.118.17.utmcsr=dabengou.leanapp.cn|utmccn=(referral)|utmcmd=referral|utmcct=/; ps=y; dbcl2="175248276:dvGAoVfrnCI"; ck=tKFj; __utmt=1; push_noty_num=0; __utmb=30149280.51.10.1540205417; Hm_lvt_6d4a8cfea88fa457c3127e14fb5fabc2=1540207043; _gid=GA1.3.1680789569.1540207043; _gat_UA-53594431-4=1; _gat_UA-53594431-6=1; Hm_lpvt_6d4a8cfea88fa457c3127e14fb5fabc2=1540207047`,
+        'Cookie': `ll="108288"; bid=Vr0BxuvScWw; viewed="1417805"; _vwo_uuid_v2=1F51885829EC8E5F35676E8A61D7CEB8|0a20ca1b31aa8a07bc5260cc095ec9f2; _ga=GA1.2.1771395678.1510888474; _ga=GA1.3.1771395678.1510888474; __yadk_uid=IlhLGT8addwcULd9fDzpaEcxEFYHCMEu; push_doumail_num=0; douban-profile-remind=1; ue="naoyeye@126.com"; __utmv=30149280.17524; douban-fav-remind=1; __utmc=30149280; frodotk="00c6918fb7c2c3940253b4af27484abc"; talionusr="eyJpZCI6ICIxNzUyNDgyNzYiLCAibmFtZSI6ICJcdThjNDZcdTc0ZTNcdTU5MjdcdTdiMjhcdTcyZDcifQ=="; __ads_session=okmmfDIUKgkGtCIAggA=; talionnav_show_app="0"; ap_v=0,6.0; __utma=30149280.1771395678.1510888474.1538635021.1540205417.118; __utmz=30149280.1540205417.118.17.utmcsr=dabengou.leanapp.cn|utmccn=(referral)|utmcmd=referral|utmcct=/; ps=y; dbcl2="175248276:dvGAoVfrnCI"; ck=${process.env.ck}; __utmt=1; push_noty_num=0; __utmb=30149280.51.10.1540205417; Hm_lvt_6d4a8cfea88fa457c3127e14fb5fabc2=1540207043; _gid=GA1.3.1680789569.1540207043; _gat_UA-53594431-4=1; _gat_UA-53594431-6=1; Hm_lpvt_6d4a8cfea88fa457c3127e14fb5fabc2=1540207047`,
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
         'DNT': 1,
+        'Connection': 'keep-alive',
         'X-Requested-With': 'XMLHttpRequest'
       },
       form: {
         text: text,
         image_urls: null,
-        ck: 'dH3U',
+        ck: process.env.ck,
         for_mobile: 1
       },
       json: true,
