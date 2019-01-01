@@ -2,7 +2,7 @@
 * @Author: hanjiyun
 * @Date:   2018-09-21 16:25:08
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2018-11-22 21:51:43
+* @Last Modified time: 2019-01-01 21:14:58
 */
 
 
@@ -45,16 +45,17 @@ function postBroadcast(text) {
     rp.post({
       url: 'https://m.douban.com/rexxar/api/v2/status/create_status',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
+        'User-Agent': 'mozilla/5.0 (iphone; cpu iphone os 5_1_1 like mac os x) applewebkit/534.46 (khtml, like gecko) mobile/9b206 com.douban.frodo/5.0',
         'Referer': `https://m.douban.com/status/`,
         'Origin': 'https://m.douban.com',
         'Host': 'm.douban.com',
         'Cookie': process.env.cookie,
         'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
         'Content-Type': 'application/x-www-form-urlencoded',
         'DNT': 1,
         'Connection': 'keep-alive',
-        'X-Requested-With': 'XMLHttpRequest'
+        'X-Requested-With': 'XMLHttpRequest',
       },
       form: {
         text: text,
@@ -68,8 +69,8 @@ function postBroadcast(text) {
       console.log('----> \n', new Date(), 'postBroadcast Success')
     }).catch(err => {
       if (err && err.error) {
-        console.log('----> \n', new Date(), 'postBroadcast ERR. Code: ', err.error.code)
-        console.log('Err msg: ', JSON.stringify(err))
+        console.error('----> \n', new Date(), 'postBroadcast ERR. Code: ', err.error.code)
+        console.error('Err msg: ', JSON.stringify(err))
         switch (err.error.code) {
           case 103: // INVALID_ACCESS_TOKEN
           case 106: // ACCESS_TOKEN_HAS_EXPIRED
@@ -83,13 +84,13 @@ function postBroadcast(text) {
               i++;
               tryPost();
             }else{
-              console.log(new Date(), 'ERR, posting try more than 5 times')
+              console.error(new Date(), 'ERR, posting try more than 5 times')
             }
             break;
         }
       } else {
-        console.log('----> \n', new Date(), 'postBroadcast ERR: ', err)
-        console.log('Err msg: ', JSON.stringify(err))
+        // console.error('----> \n', new Date(), 'postBroadcast ERR: ', err)
+        console.error('Err msg: ', JSON.stringify(err))
       }
     })
   }
