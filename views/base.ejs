@@ -16,12 +16,23 @@
     </script>
   </head>
   <body>
+    <nav>
+    <a href="/">首页</a>
+    <% if (locals.user) { %>
+      <span><%= user.username %></<span>
+      <a href="/accounts/logout">退出</a>
+    <% } else { %>
+      <a href="/accounts/login">登录</a>
+      <a href="/accounts/register">注册</a>
+    <% } %>
+    </nav>
+
     <div id="wrap">
       <h1><%- defineContent('title') %></h1>
       <%- body %>
     </div>
 
-    <footer><p>copyright 2018 by <a href="https://han.im" target="_blank">Han</a></p></footer>
+    <footer><p>&copy; copyright 2019 by <a href="https://han.im" target="_blank">Han</a></p></footer>
     <%- script %>
   </body>
 </html>

@@ -17,6 +17,7 @@ require('./cloud');
 var app = express();
 app.disable('x-powered-by');
 
+
 // 设置模板引擎
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -62,6 +63,8 @@ app.use(timeout('15s'));
 // 加载云引擎中间件
 app.use(AV.express());
 
+app.use(AV.Cloud.CookieSession({ secret: 'Pr3+)7qr3#Mo$n6u', maxAge: 3600000, fetchUser: true }));
+
 app.enable('trust proxy');
 // 需要重定向到 HTTPS 可去除下一行的注释。
 app.use(AV.Cloud.HttpsRedirect());
@@ -75,6 +78,7 @@ app.use(cookieParser());
 app.use('/',         require('./routes/home')(app));
 app.use('/newbot',  require('./routes/newbot')(app));
 app.use('/bot', require('./routes/bot')(app));
+app.use('/accounts', require('./routes/accounts')(app));
 // app.use('/dabenji',  require('./routes/dabenji'));
 // app.use('/todos', require('./routes/dabengou'));
 

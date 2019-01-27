@@ -2,7 +2,7 @@
 * @Author: hanjiyun
 * @Date:   2019-01-26 23:05:08
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2019-01-26 23:22:51
+* @Last Modified time: 2019-01-27 22:15:31
 */
 
 
@@ -24,6 +24,7 @@ module.exports = (app) => {
       const bot = data.results[0]
 
       res.render('bot', {
+        user: req.currentUser && req.currentUser.attributes || null,
         bot
       })
 

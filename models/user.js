@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-20 14:48:09
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2019-01-26 23:13:38
+* @Last Modified time: 2019-01-27 21:20:26
 */
 
 const AV = require('leanengine')
@@ -22,7 +22,6 @@ class USER {
   //   this.status = '0' // 0=未运行 1=运行中 2=已暂停
   //   this.accessToken = null
   //   this.refreshToken = null
-    this.search = search
   }
 
   /* 查询用户 */

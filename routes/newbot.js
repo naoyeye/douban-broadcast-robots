@@ -2,7 +2,7 @@
 * @Author: hanjiyun
 * @Date:   2019-01-26 20:04:52
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2019-01-26 23:14:21
+* @Last Modified time: 2019-01-27 22:15:52
 */
 'use strict';
 const router = require('express').Router()
@@ -12,7 +12,9 @@ const LeanRequest = require('./../utils/lean-request')
 module.exports = (app) => {
 
   router.get('/', (req, res, next) => {
-    res.render('newbot')
+    res.render('newbot', {
+      user: req.currentUser && req.currentUser.attributes || null,
+    })
   })
 
   router.post('/', (req, res, next) => {

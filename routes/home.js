@@ -24,7 +24,8 @@ module.exports = function(app) {
       }
 
       res.render('home', {
-        bots: data.results
+        bots: data.results,
+        user: req.currentUser && req.currentUser.attributes || null
       })
     }).catch(err => {
       res.render(err)
@@ -32,6 +33,7 @@ module.exports = function(app) {
   })
 
 
+  /*
   // 请求豆瓣授权
   app.get('/auth/douban', function (req, res, next) {
     const parsedUrl = url.parse(req.url, true)
@@ -106,7 +108,7 @@ module.exports = function(app) {
 
     })
   })
-
+  */
 
   return router
 }

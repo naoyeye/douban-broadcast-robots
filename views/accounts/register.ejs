@@ -1,0 +1,25 @@
+<%- contentFor('title') %>
+注册
+
+<link rel="stylesheet" href="/stylesheets/home.css">
+
+<%- contentFor('body') %>
+<form action='/accounts/register' method='POST'>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <% if (locals.errMsg) { %>
+  <div><%= errMsg %></div>
+  <% } %>
+
+  <fieldset>
+    <legend>用户名</legend>
+    <input type="text" name="username" />
+  </fieldset>
+  
+  <fieldset>
+    <legend>密码</legend>
+    <input type="password" name="password" />
+  </fieldset>
+
+  <button type="submit">提交</button>
+</form>
