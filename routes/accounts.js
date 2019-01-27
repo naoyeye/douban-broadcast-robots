@@ -2,7 +2,7 @@
 * @Author: hanjiyun
 * @Date:   2019-01-27 18:25:48
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2019-01-27 22:47:22
+* @Last Modified time: 2019-01-27 23:06:03
 */
 const router = require('express').Router()
 const AV = require('leanengine')
@@ -21,13 +21,13 @@ module.exports = (app) => {
   })
 
   router.post('/login', csrfProtection, (req, res, next) => {
-    let username = req.body.username
+    let email = req.body.email
     let password = req.body.password
-    if (!username || username.trim().length === 0
+    if (!email || email.trim().length === 0
       || !password || password.trim().length === 0) {
       return res.redirect(`/accounts/login?errMsg=${encodeURIComponent('用户名或密码不能为空')}`)
     }
-    AV.User.logIn(username, password).then((user) => {
+    AV.User.logIn(email, password).then((user) => {
       res.saveCurrentUser(user) // 保存当前用户到 Cookie
       res.redirect('/')
     }, (err) => {
@@ -49,14 +49,17 @@ module.exports = (app) => {
   router.post('/register', csrfProtection, (req, res, next) => {
     let username = req.body.username
     let password = req.body.password
+    let email = req.body.email
     if (!username || username.trim().length === 0
-      || !password || password.trim().length === 0) {
-      return res.redirect(`/accounts/register?errMsg=${encodeURIComponent('用户名或密码不能为空')}`)
+      || !password || password.trim().length === 0
+      || !email || email.trim().length === 0) {
+      return res.redirect(`/accounts/register?errMsg=${encodeURIComponent('用户名、邮箱、密码不能为空')}`)
     }
     let user = new AV.User()
     user.set('username', username)
     user.set('password', password)
-    user.signUp().then(function(user) {
+    user.set('email', email)
+    user.signUp().then((user) => {
       // 保存当前用户到 Cookie
       res.saveCurrentUser(user)
       res.redirect('/')
