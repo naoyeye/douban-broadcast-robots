@@ -76,8 +76,7 @@ app.use(cookieParser());
 
 // 可以将一类的路由单独保存在一个文件中
 app.use('/',         require('./routes/home')(app));
-app.use('/newbot',  require('./routes/newbot')(app));
-app.use('/bot', require('./routes/bot')(app));
+app.use('/bot',      require('./routes/bot')(app));
 app.use('/accounts', require('./routes/accounts')(app));
 // app.use('/dabenji',  require('./routes/dabenji'));
 // app.use('/todos', require('./routes/dabengou'));

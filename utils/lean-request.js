@@ -17,11 +17,18 @@ const LeanRequest = (className, method, optionsData) => {
       }
     }
 
+    let url = `https://${process.env.LEANCLOUD_APP_NAME}.api.lncld.net/1.1/classes/${className}`
+
     if (optionsData && method === 'post') {
       options.body = optionsData
+      url = `${url}?fetchWhenSave=true`
+    } else if (optionsData && method === 'get') {
+      url = `${url}?${encodeURI(optionsData)}`
     }
 
-    fetch(`https://${ process.env.LEANCLOUD_APP_NAME}.api.lncld.net/1.1/classes/${className}?fetchWhenSave=true`, options)
+    console.log('url - ', url)
+
+    fetch(url, options)
       .then(res => res.json())
       .then(json => resolve(json))
       .catch(err => reject(err))

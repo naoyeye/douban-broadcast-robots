@@ -2,14 +2,20 @@
 * @Author: hanjiyun
 * @Date:   2019-01-26 22:49:47
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2019-01-26 23:23:51
+* @Last Modified time: 2019-02-07 17:10:02
 */
 
 .bot-list {
-  text-align: center;
+  display: flex;
+  // text-align: center;
+  justify-content: left;
+  flex-flow: row wrap;
   margin: 40px auto;
 
   li {
+    // flex: 1;
+    min-width: 150px;
+
     &.new {
       width: 150px;
       height: 270px;

@@ -2,7 +2,7 @@
 * @Author: naoyeye
 * @Date:   2018-03-11 18:13:11
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2019-01-27 21:46:53
+* @Last Modified time: 2019-02-07 17:10:35
 */
 
 * {
@@ -27,11 +27,14 @@ body {
 }
 
 #wrap {
+  width: 950px;
+  margin: 0 auto;
   padding-top: 30px;
 }
 
 h1 {
   font-weight: normal;
+  padding: 0 20px;
 }
 
 a {
@@ -40,6 +43,7 @@ a {
 }
 
 .card {
+  width: 150px;
   display: inline-block;
   margin: 20px;
   background: #fff;
@@ -59,6 +63,7 @@ a {
 
     img {
       max-width: 100%;
+      width: 100%;
     }
   }
 
@@ -69,9 +74,14 @@ a {
   }
 
   p {
+    display: block;
+    margin: 0 10px;
     padding-bottom: 10px;
     color: #999;
     font-size: 13px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .status {
@@ -82,7 +92,7 @@ a {
 }
 
 footer {
-  // bottom: 20px;
+  padding-bottom: 20px;
   // left: 0;
   width: 100%;
   color: #aaa;
