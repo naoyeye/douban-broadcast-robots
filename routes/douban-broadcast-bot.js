@@ -2,7 +2,7 @@
 * @Author: hanjiyun
 * @Date:   2018-09-21 16:25:08
 * @Last Modified by:   hanjiyun
-* @Last Modified time: 2019-01-01 21:14:58
+* @Last Modified time: 2020-03-09 15:54:42
 */
 
 
@@ -25,12 +25,22 @@ var point = 20; // 第几分钟时发布广播
 
 const PromisifyGET = (options) => {
   return new Promise((resolve, reject) => {
-    request.get(options, (err, httpResponse, body) => {
-      if (err || httpResponse.statusCode !== 200) {
+    request.get({
+      url: `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${options.symbol}&convert=${options.convert}`,
+      headers: {
+        'X-CMC_PRO_API_KEY': '0d70c8aa-aa90-4cc6-8cb6-7cfb3a1235f1'
+      },
+      json: true,
+      gzip: true
+    }, (err, httpResponse, body) => {
+      if (err || httpResponse.statusCode !== 200 ||
+        // coinmarketcap api:
+        // https://coinmarketcap.com/api/documentation/v1/#operation/getV1CryptocurrencyQuotesLatest
+        (body.status && body.status.error_code !== 0 || !body.data) ) {
         reject(err)
         return
       }
-      resolve(JSON.parse(body))
+      resolve(body)
     })
   })
 }
@@ -104,33 +114,41 @@ function getText() {
   const apiRequestList = [
     // btc-usd
     PromisifyGET({
-      url: 'https://www.bitstamp.net/api/v2/ticker/btcusd/'
+      symbol: 'BTC',
+      convert: 'USD'
     }),
     // eos-usd
     PromisifyGET({
-      url: 'https://api.coinmarketcap.com/v2/ticker/1765/?convert=USD'
+      symbol: 'EOS',
+      convert: 'USD'
     }),
     // eth-usd
     PromisifyGET({
-      url: 'https://api.coinmarketcap.com/v2/ticker/1027/?convert=USD'
+      symbol: 'ETH',
+      convert: 'USD'
     }),
-    // ht-btc
+    // ht-usd
     PromisifyGET({
-      url: 'https://api.coinmarketcap.com/v2/ticker/2502/?convert=BTC'
+      symbol: 'HT',
+      convert: 'USD'
     })
   ]
 
   Promise.all(apiRequestList).then(resList => {
-    const latestPriceBTC = `${resList[0].last}`
-    const latestPriceEOS = `${parseFloat(resList[1].data.quotes.USD.price).toFixed(2)}`
-    const latestPriceETH = `${parseFloat(resList[2].data.quotes.USD.price).toFixed(2)}`
-    const latestPriceHT = `${resList[3].data.quotes.BTC.price}`
+    console.log('resList = ', resList)
+    // console.log('resList - ', resList)
+    const latestPriceBTC = `${parseFloat(resList[0].data.BTC.quote.USD.price).toFixed(2)}`
+    const latestPriceEOS = `${parseFloat(resList[1].data.EOS.quote.USD.price).toFixed(2)}`
+    const latestPriceETH = `${parseFloat(resList[2].data.ETH.quote.USD.price).toFixed(2)}`
+    const latestPriceHT = `${parseFloat(resList[3].data.HT.quote.USD.price).toFixed(4)}`
 
-    const text = `1 btc ≈ $${latestPriceBTC}\r\n1 eos ≈ $${latestPriceEOS}\r\n1 eth ≈ $${latestPriceETH}\r\n1 ht ≈ ₿${latestPriceHT}`
+    const text = `1 btc ≈ $${latestPriceBTC}\r\n1 eos ≈ $${latestPriceEOS}\r\n1 eth ≈ $${latestPriceETH}\r\n1 ht ≈ $${latestPriceHT}`
 
     postBroadcast(text)
 
   }).catch(errList => {
+    console.log('errList - ', errList)
+
     if (errList[0]) {
       console.error('获取 btc/usd 失败')
     }
@@ -141,7 +159,7 @@ function getText() {
       console.error('获取 eth/usd 失败')
     }
     if (errList[3]) {
-      console.error('获取 ht/btc 失败')
+      console.error('获取 ht/usd 失败')
     }
 
     return '获取币价出错'
