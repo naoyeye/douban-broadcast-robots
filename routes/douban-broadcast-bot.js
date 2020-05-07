@@ -20,7 +20,7 @@ var latestPriceBTC = 0;
 var latestPriceEOS = 0;
 var latestPriceETH = 0;
 var latestPriceHT = 0;
-var point = 59; // 第几分钟时发布广播
+var point = 20; // 第几分钟时发布广播
 
 
 const PromisifyGET = (options) => {
